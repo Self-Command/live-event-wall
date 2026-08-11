@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#07122f">
+  <title>电子签名墙 · 签名端</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="signer-body">
+  <div id="theme-background" class="theme-background" aria-hidden="true">
+    <div class="theme-image"></div>
+    <div class="theme-gradient"></div>
+    <canvas id="signer-stars" class="theme-stars"></canvas>
+    <div class="theme-overlay"></div>
+  </div>
+
+  <div id="connection-pill" class="connection-pill is-connecting" aria-live="polite">
+    <span class="connection-dot"></span>
+    <span id="connection-text">正在连接</span>
+  </div>
+
+  <main class="signer-shell">
+    <header id="signer-heading" class="hero-heading">
+      <div class="hero-mark" aria-hidden="true">✦</div>
+      <div>
+        <h1 id="signer-title">云上青春 · 梦想交汇</h1>
+        <p id="signer-subtitle">电子签名墙</p>
+      </div>
+    </header>
+
+    <section class="signature-console" aria-label="手写签名区域">
+      <div id="canvas-frame" class="canvas-frame">
+        <canvas id="signature-canvas" aria-label="请在这里手写签名"></canvas>
+        <div id="canvas-placeholder" class="canvas-placeholder">
+          <strong>请在此处签名</strong>
+          <span>支持触摸屏、手写笔和鼠标</span>
+        </div>
+      </div>
+
+      <div id="advanced-tools" class="advanced-tools">
+        <div class="tool-group">
+          <span class="toolbar-label">笔刷</span>
+          <div class="segmented" role="group" aria-label="笔刷类型">
+            <button class="tool-choice pen-type is-active" type="button" data-pen-type="round"><span class="tool-symbol round-symbol"></span><span>圆润</span></button>
+            <button class="tool-choice pen-type" type="button" data-pen-type="fountain"><span class="tool-symbol fountain-symbol"></span><span>钢笔</span></button>
+            <button class="tool-choice pen-type" type="button" data-pen-type="marker"><span class="tool-symbol marker-symbol"></span><span>马克</span></button>
+            <button class="tool-choice pen-type" type="button" data-pen-type="neon"><span class="tool-symbol neon-symbol"></span><span>霓虹</span></button>
+          </div>
+        </div>
+
+        <div class="tool-group">
+          <span class="toolbar-label">线型</span>
+          <div class="segmented" role="group" aria-label="线条样式">
+            <button class="tool-choice line-style is-active" type="button" data-line-style="solid"><span class="line-preview solid"></span><span>实线</span></button>
+            <button class="tool-choice line-style" type="button" data-line-style="dashed"><span class="line-preview dashed"></span><span>虚线</span></button>
+            <button class="tool-choice line-style" type="button" data-line-style="dotted"><span class="line-preview dotted"></span><span>点线</span></button>
+            <button class="tool-choice line-style" type="button" data-line-style="dashdot"><span class="line-preview dashdot"></span><span>点划</span></button>
+          </div>
+        </div>
+
+        <div class="tool-group color-group">
+          <span class="toolbar-label">颜色</span>
+          <div id="color-palette" class="color-palette" role="group" aria-label="签名颜色">
+            <button class="color-choice is-active" type="button" data-color="#111827" style="--swatch:#111827" aria-label="墨黑"></button>
+            <button class="color-choice" type="button" data-color="#ffffff" style="--swatch:#ffffff" aria-label="白色"></button>
+            <button class="color-choice" type="button" data-color="#2563eb" style="--swatch:#2563eb" aria-label="蓝色"></button>
+            <button class="color-choice" type="button" data-color="#06b6d4" style="--swatch:#06b6d4" aria-label="青色"></button>
+            <button class="color-choice" type="button" data-color="#7c3aed" style="--swatch:#7c3aed" aria-label="紫色"></button>
+            <button class="color-choice" type="button" data-color="#db2777" style="--swatch:#db2777" aria-label="玫红"></button>
+            <button class="color-choice" type="button" data-color="#dc2626" style="--swatch:#dc2626" aria-label="红色"></button>
+            <button class="color-choice" type="button" data-color="#f59e0b" style="--swatch:#f59e0b" aria-label="金色"></button>
+            <label class="custom-color" title="自定义颜色">
+              <input id="custom-color" type="color" value="#111827" aria-label="自定义签名颜色">
+              <span>+</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="tool-group width-group">
+          <span class="toolbar-label">粗细 <output id="width-output">6</output></span>
+          <div class="width-control">
+            <span class="width-dot small"></span>
+            <input id="pen-width" type="range" min="1" max="24" step="1" value="6" aria-label="笔迹粗细">
+            <span class="width-dot large"></span>
+          </div>
+        </div>
+
+        <div class="tool-group opacity-group">
+          <span class="toolbar-label">透明度 <output id="opacity-output">100%</output></span>
+          <input id="pen-opacity" type="range" min="20" max="100" step="5" value="100" aria-label="笔迹透明度">
+        </div>
+      </div>
+
+      <div class="signer-toolbar">
+        <div class="history-controls" role="group" aria-label="编辑操作">
+          <button id="undo-button" class="compact-action" type="button" disabled title="撤销">↶<span>撤销</span></button>
+          <button id="redo-button" class="compact-action" type="button" disabled title="重做">↷<span>重做</span></button>
+          <button id="eraser-button" class="compact-action" type="button" title="橡皮擦">⌫<span>橡皮</span></button>
+          <button id="clear-button" class="compact-action danger" type="button" title="清空">⌧<span>重写</span></button>
+        </div>
+
+        <button id="submit-button" class="submit-action" type="button" disabled>
+          <span class="submit-check">✓</span>
+          <span id="submit-label">确认签名并上墙</span>
+        </button>
+      </div>
+    </section>
+
+    <p class="signer-hint">完成签名后点击确认，签名将实时显示到现场电子墙</p>
+  </main>
+
+  <div id="success-toast" class="success-toast" role="status" aria-live="polite">
+    <span class="toast-check">✓</span>
+    <div><strong>签名已上墙</strong><small>签名区已自动清空</small></div>
+  </div>
+
+  <script src="/theme.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

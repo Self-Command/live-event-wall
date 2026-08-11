@@ -1,0 +1,27 @@
+{
+  "name": "live-signature-wall-pro",
+  "version": "3.3.0",
+  "description": "Customizable real-time signature wall using vendored Packery bin-packing for fixed-size, randomized, non-overlapping LED placement",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check public/theme.js && node --check public/admin.js && node --check public/display.js && node --check public/studio.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "4.22.2",
+    "qrcode": "1.5.4",
+    "socket.io": "4.8.3"
+  },
+  "keywords": [
+    "signature-wall",
+    "event-wall",
+    "led-wall",
+    "socket.io",
+    "digital-signature"
+  ],
+  "license": "MIT"
+}

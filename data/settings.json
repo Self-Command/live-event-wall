@@ -1,0 +1,56 @@
+{
+  "version": 4,
+  "event": {
+    "title": "demo",
+    "subtitle": "电子签名墙",
+    "titleAlignment": "left",
+    "fontFamily": "system",
+    "titleColor": "#f7f9ff",
+    "subtitleColor": "#b8cbf4",
+    "titleSize": 52,
+    "subtitleSize": 21,
+    "showTitle": true,
+    "showStatus": true,
+    "showFooter": true
+  },
+  "background": {
+    "mode": "cosmos",
+    "preset": "custom",
+    "color1": "#041625",
+    "color2": "#0a4b56",
+    "color3": "#503a88",
+    "angle": 132,
+    "image": "",
+    "fit": "cover",
+    "position": "center center",
+    "overlayColor": "#021015",
+    "overlayOpacity": 0.16,
+    "blur": 0,
+    "stars": true
+  },
+  "wall": {
+    "gap": 18,
+    "maxPerPage": 20,
+    "pageInterval": 10,
+    "showPageIndicator": true,
+    "signatureOpacity": 0.98,
+    "signatureGlow": true,
+    "glowColor": "#4f8cff",
+    "glowStrength": 0.5,
+    "wallPadding": 20,
+    "autoPageSize": true,
+    "minCellWidth": 300,
+    "minCellHeight": 200,
+    "cellPadding": 8,
+    "order": "oldest"
+  },
+  "signer": {
+    "defaultPenType": "round",
+    "defaultLineStyle": "solid",
+    "defaultPenColor": "#111827",
+    "defaultPenWidth": 6,
+    "defaultOpacity": 1,
+    "showAdvancedTools": true,
+    "canvasColor": "#ffffff"
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050d25">
+  <title>电子签名墙 · 大屏端</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/vendor/packery-3.0.0.pkgd.min.js"></script>
+  <script src="/vendor/imagesloaded-5.0.0.pkgd.min.js"></script>
+  <script src="/vendor/lodash-4.18.1.min.js"></script>
+</head>
+<body class="wall-body">
+  <div id="theme-background" class="theme-background" aria-hidden="true">
+    <div class="theme-image"></div>
+    <div class="theme-gradient"></div>
+    <canvas id="wall-stars" class="theme-stars"></canvas>
+    <div class="theme-overlay"></div>
+  </div>
+
+  <header id="wall-header" class="wall-header">
+    <div id="wall-brand" class="wall-brand">
+      <div class="wall-brand-mark" aria-hidden="true">✦</div>
+      <div class="wall-title-copy">
+        <h1 id="wall-title">云上青春 · 梦想交汇</h1>
+        <p id="wall-subtitle">电子签名墙</p>
+      </div>
+    </div>
+
+    <div id="wall-status" class="wall-status is-connecting">
+      <span class="wall-status-dot"></span>
+      <span id="wall-status-text">正在连接</span>
+      <span class="status-divider"></span>
+      <strong id="wall-count">0</strong>
+      <small>份签名</small>
+    </div>
+  </header>
+
+  <main id="signature-wall" class="signature-wall" aria-live="polite">
+    <div id="signature-grid" class="signature-grid"></div>
+  </main>
+
+  <section id="wall-empty" class="wall-empty">
+    <div class="wall-empty-orbit"></div>
+    <div class="wall-empty-mark">✦</div>
+    <h2>等待第一份签名</h2>
+    <p>签名确认后，将实时出现在现场电子墙</p>
+  </section>
+
+  <div id="page-indicator" class="page-indicator" hidden>
+    <span id="page-current">1</span><i>/</i><span id="page-total">1</span>
+  </div>
+
+  <div id="wall-footer" class="wall-footer">
+    <span>LIVE SIGNATURE WALL</span>
+    <span class="wall-footer-line"></span>
+    <span>按 F 键进入全屏</span>
+  </div>
+
+  <script src="/theme.js"></script>
+  <script src="/display.js"></script>
+</body>
+</html>

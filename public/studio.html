@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>电子签名墙 · 设计与控制台</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/studio.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="studio-body">
+  <header class="studio-topbar">
+    <div>
+      <p class="eyebrow">LIVE SIGNATURE WALL</p>
+      <h1>设计与控制台</h1>
+    </div>
+    <div class="topbar-actions">
+      <a href="/sign" target="_blank" class="ghost-link">打开签名端</a>
+      <a href="/display" target="_blank" class="ghost-link">打开大屏端</a>
+      <button id="save-settings" class="primary-button" type="button">保存并实时应用</button>
+    </div>
+  </header>
+
+  <main class="studio-layout">
+    <aside class="studio-panel">
+      <section class="studio-section">
+        <div class="section-heading"><h2>活动标题</h2><span>实时同步</span></div>
+        <label>主标题<input id="setting-title" type="text" maxlength="100"></label>
+        <label>副标题<input id="setting-subtitle" type="text" maxlength="100"></label>
+        <div class="form-grid three">
+          <label>对齐<select id="setting-title-alignment"><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select></label>
+          <label>字体<select id="setting-font"><option value="system">现代无衬线</option><option value="serif">典雅衬线</option><option value="rounded">圆润字体</option><option value="mono">等宽字体</option></select></label>
+          <label>标题字号<input id="setting-title-size" type="number" min="24" max="96"></label>
+        </div>
+        <div class="form-grid three">
+          <label>主标题颜色<input id="setting-title-color" type="color"></label>
+          <label>副标题颜色<input id="setting-subtitle-color" type="color"></label>
+          <label>副标题字号<input id="setting-subtitle-size" type="number" min="12" max="48"></label>
+        </div>
+        <div class="toggle-grid">
+          <label class="switch-row"><input id="setting-show-title" type="checkbox"><span>显示标题</span></label>
+          <label class="switch-row"><input id="setting-show-status" type="checkbox"><span>显示连接与计数</span></label>
+          <label class="switch-row"><input id="setting-show-footer" type="checkbox"><span>显示底部说明</span></label>
+        </div>
+      </section>
+
+      <section class="studio-section">
+        <div class="section-heading"><h2>背景设计</h2><span>预设 + 自定义</span></div>
+        <div id="background-presets" class="preset-grid">
+          <button type="button" data-preset="cosmos" class="preset-card cosmos"><span>星空</span></button>
+          <button type="button" data-preset="aurora" class="preset-card aurora"><span>极光</span></button>
+          <button type="button" data-preset="midnight" class="preset-card midnight"><span>午夜</span></button>
+          <button type="button" data-preset="sunrise" class="preset-card sunrise"><span>日出</span></button>
+          <button type="button" data-preset="pearl" class="preset-card pearl"><span>珍珠白</span></button>
+        </div>
+        <div class="form-grid three">
+          <label>颜色一<input id="setting-color-1" type="color"></label>
+          <label>颜色二<input id="setting-color-2" type="color"></label>
+          <label>颜色三<input id="setting-color-3" type="color"></label>
+        </div>
+        <label>渐变角度 <output id="angle-output"></output><input id="setting-angle" type="range" min="0" max="360" step="1"></label>
+        <div class="upload-row">
+          <label class="upload-button">上传背景图片<input id="background-file" type="file" accept="image/png,image/jpeg,image/webp" hidden></label>
+          <button id="remove-background" type="button" class="secondary-button">移除图片</button>
+          <span id="background-name">未上传</span>
+        </div>
+        <div class="form-grid three">
+          <label>图片适配<select id="setting-bg-fit"><option value="cover">铺满裁切</option><option value="contain">完整显示</option><option value="fill">强制拉伸</option></select></label>
+          <label>图片位置<select id="setting-bg-position"><option value="center center">居中</option><option value="center top">顶部</option><option value="center bottom">底部</option><option value="left center">左侧</option><option value="right center">右侧</option></select></label>
+          <label>背景模式<select id="setting-bg-mode"><option value="cosmos">动态星空</option><option value="gradient">渐变</option><option value="solid">纯色</option><option value="image">图片</option></select></label>
+        </div>
+        <div class="form-grid three">
+          <label>遮罩颜色<input id="setting-overlay-color" type="color"></label>
+          <label>遮罩强度 <output id="overlay-output"></output><input id="setting-overlay-opacity" type="range" min="0" max="90" step="1"></label>
+          <label>背景模糊 <output id="blur-output"></output><input id="setting-bg-blur" type="range" min="0" max="20" step="1"></label>
+        </div>
+        <label class="switch-row"><input id="setting-stars" type="checkbox"><span>显示动态星点</span></label>
+      </section>
+
+      <section class="studio-section">
+        <div class="section-heading"><h2>签名墙布局</h2><span>严格零遮挡</span></div>
+        <p class="section-note">签名采用统一尺寸的稳定随机槽位：位置看起来随机，但每个槽位都有独立矩形安全区；签名不放大铺满、不旋转、不交叉、不覆盖标题区。</p>
+        <div class="form-grid two">
+          <label>签名间距 <output id="gap-output"></output><input id="setting-gap" type="range" min="4" max="52" step="1"></label>
+          <label>墙体内边距 <output id="padding-output"></output><input id="setting-wall-padding" type="range" min="0" max="80" step="1"></label>
+          <label>每页最多签名<input id="setting-max-page" type="number" min="4" max="240"></label>
+          <label>自动翻页秒数<input id="setting-page-interval" type="number" min="4" max="60"></label>
+          <label>签名统一宽度<input id="setting-min-cell-width" type="number" min="80" max="600"></label>
+          <label>签名统一高度<input id="setting-min-cell-height" type="number" min="48" max="360"></label>
+          <label>单元内部留白 <output id="cell-padding-output"></output><input id="setting-cell-padding" type="range" min="0" max="40" step="1"></label>
+          <label>排列顺序<select id="setting-order"><option value="oldest">先签先显示</option><option value="newest">新签名优先</option></select></label>
+        </div>
+        <div class="form-grid three">
+          <label>签名透明度 <output id="signature-opacity-output"></output><input id="setting-signature-opacity" type="range" min="25" max="100" step="1"></label>
+          <label>发光颜色<input id="setting-glow-color" type="color"></label>
+          <label>发光强度 <output id="glow-output"></output><input id="setting-glow-strength" type="range" min="0" max="100" step="1"></label>
+        </div>
+        <div class="toggle-grid">
+          <label class="switch-row"><input id="setting-auto-page-size" type="checkbox"><span>签名增多时统一分档缩小并自动分页</span></label>
+          <label class="switch-row"><input id="setting-signature-glow" type="checkbox"><span>开启签名发光</span></label>
+          <label class="switch-row"><input id="setting-page-indicator" type="checkbox"><span>显示分页指示</span></label>
+        </div>
+      </section>
+
+      <section class="studio-section">
+        <div class="section-heading"><h2>签名端默认笔刷</h2><span>用户仍可现场调整</span></div>
+        <div class="form-grid two">
+          <label>默认笔刷<select id="setting-pen-type"><option value="round">圆润</option><option value="fountain">钢笔</option><option value="marker">马克</option><option value="neon">霓虹</option></select></label>
+          <label>默认线型<select id="setting-line-style"><option value="solid">实线</option><option value="dashed">虚线</option><option value="dotted">点线</option><option value="dashdot">点划线</option></select></label>
+          <label>默认颜色<input id="setting-pen-color" type="color"></label>
+          <label>默认粗细<input id="setting-pen-width" type="number" min="1" max="24"></label>
+          <label>默认透明度<input id="setting-pen-opacity" type="number" min="20" max="100"></label>
+          <label>签名区底色<input id="setting-canvas-color" type="color"></label>
+          <label class="switch-row inline-switch"><input id="setting-advanced-tools" type="checkbox"><span>显示完整笔刷工具</span></label>
+        </div>
+      </section>
+
+      <section class="studio-section danger-zone">
+        <div class="section-heading"><h2>管理操作</h2><span>谨慎使用</span></div>
+        <label>管理口令（仅设置了 WALL_ADMIN_TOKEN 时需要）<input id="admin-token" type="password" autocomplete="current-password" placeholder="未设置可留空"></label>
+        <div class="button-row">
+          <button id="export-settings" type="button" class="secondary-button">导出配置</button>
+          <label class="secondary-button file-button">导入配置<input id="import-settings" type="file" accept="application/json" hidden></label>
+          <button id="reset-settings" type="button" class="secondary-button">恢复默认设计</button>
+          <button id="clear-signatures" type="button" class="danger-button">清空全部签名</button>
+        </div>
+      </section>
+
+      <section class="studio-section">
+        <div class="section-heading"><h2>最近签名</h2><span id="signature-count-label">0 份</span></div>
+        <div id="signature-manager" class="signature-manager"></div>
+      </section>
+    </aside>
+
+    <section class="studio-preview">
+      <div class="preview-toolbar">
+        <strong>实时大屏预览</strong>
+        <span id="studio-status">正在连接</span>
+      </div>
+      <div class="preview-frame-wrap">
+        <iframe id="wall-preview" src="/display?preview=1" title="签名墙实时预览"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <div id="studio-toast" class="studio-toast" role="status"></div>
+  <script src="/studio.js"></script>
+</body>
+</html>
